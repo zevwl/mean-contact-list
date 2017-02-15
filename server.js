@@ -7,9 +7,9 @@ const mongodb = require('mongodb');
 const util = require('util');
 
 const app = express();
-const ObjectID = mongodb.ObjectID;
+const objectId = mongodb.ObjectID;
 const port = process.env.PORT || 8080;
-const CONTACTS_COLLECTION = 'contacts';
+const contacts = 'contacts';
 
 app.use(bodyParser.json());
 
@@ -40,9 +40,14 @@ function handleError(res, reason, message, code) {
     res.status(code || 500).json({"error": message});
 }
 
-// Get all contacts
+/**
+ *  /api/contacts
+ *    GET: finds all contacts
+ *    POST: creates a new contact
+ */
+
 app.get('/api/contacts', (req, res) => {
-    db.collection(CONTACTS_COLLECTION).find({}).toArray((err, data) => {
+    db.collection(contacts).find({}).toArray((err, data) => {
         if (err) {
             handleError(res, err.message, 'Failed to get contacts.');
         } else {
@@ -58,7 +63,7 @@ app.post('/api/contacts', (req, res) => {
         handleError(res, 'Invalid user input.', 'Must provide a name.', 400);
     }
 
-    db.collection(CONTACTS_COLLECTION).insertOne(newContact, (err, doc) => {
+    db.collection(contacts).insertOne(newContact, (err, doc) => {
         if (err) {
             handleError(res, err.message, 'Failed to create new contact.');
         } else {
@@ -67,8 +72,43 @@ app.post('/api/contacts', (req, res) => {
     });
 });
 
-app.get('/api/contacts/:id', (req, res) => {});
+/**
+ *  /api/contacts/:id
+ *    GET: find contact by id
+ *    PUT: update contact by id
+ *    DELETE: deletes contact by id
+ */
 
-app.put('/api/contacts/:id', (req, res) => {});
+app.get('/api/contacts/:id', (req, res) => {
+    db.collection(contacts).findOne({_id: new objectId(req.params.id)}, (err, data) => {
+        if (err) {
+            handleError(res, err.message, 'Failed to get contact.');
+        } else {
+            res.status(200).json(data);
+        }
+    });
+});
 
-app.delete('/api/contacts/:id', (req, res) => {});
+app.put('/api/contacts/:id', (req, res) => {
+    let updateContact = req.body;
+    delete updateContact._id;
+
+    db.collection(contacts).updateOne({_id: new objectId(req.params.id)}, updateContact, (err, data) => {
+        if (err) {
+            handleError(res, err.message, 'Failed to update contact.');
+        } else {
+            updateContact._id = req.params.id;
+            res.status(200).json(updateContact);
+        }
+    });
+});
+
+app.delete('/api/contacts/:id', (req, res) => {
+    db.collection(contacts).deletOne({_id: new objectId(req.params.id)}, (err, result) => {
+        if (err) {
+            handleError(res, err.message, 'Failed to delete contact.');
+        } else {
+            res.status(200).json(req.params.id);
+        }
+    });
+});
