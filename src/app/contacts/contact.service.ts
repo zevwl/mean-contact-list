@@ -37,7 +37,7 @@ export class ContactService {
         return this.http.delete(deleteUrl)
             .toPromise()
             .then(response => response.json() as String)
-            .catch(ContactService.handleError);
+            .catch(ContactService.handleError)
     }
 
 

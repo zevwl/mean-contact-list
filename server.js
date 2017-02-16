@@ -13,6 +13,9 @@ const contacts = 'contacts';
 
 app.use(bodyParser.json());
 
+// Link to angular dist directory
+app.use(express.static('dist'));
+
 // Create a database variable outside of the database callback to reuse
 // the connection pool in your app.
 let db;
