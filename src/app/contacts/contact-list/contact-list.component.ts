@@ -4,7 +4,7 @@ import { ContactDetailsComponent } from '../contact-details/contact-details.comp
 import { ContactService } from '../contact.service';
 
 @Component({
-    selector: 'contact-list',
+    selector: 'lst-contact-list',
     templateUrl: './contact-list.component.html',
     styleUrls: ['./contact-list.component.css'],
     providers: [ContactService]
@@ -36,14 +36,14 @@ export class ContactListComponent implements OnInit {
         return this.contacts.findIndex((contact) => {
             return contact._id === contactId;
         });
-    };
+    }
 
     selectContact(contact: Contact) {
         this.selectedContact = contact;
     }
 
     createNewContact() {
-        let contact: Contact = {
+        const contact: Contact = {
             name: '',
             email: '',
             phone: {
@@ -56,22 +56,22 @@ export class ContactListComponent implements OnInit {
     }
 
     deleteContact = (contactId: String) => {
-        let index = this.getIndexOfContact(contactId);
+        const index = this.getIndexOfContact(contactId);
         if (index !== -1) {
             this.contacts.splice(index, 1);
             this.selectContact(null);
         }
         return this.contacts;
-    };
+    }
 
     addContact = (contact: Contact) => {
         this.contacts.push(contact);
         this.selectContact(contact);
         return this.contacts;
-    };
+    }
 
     updateContact = (contact: Contact) => {
-        let index = this.getIndexOfContact(contact._id);
+        const index = this.getIndexOfContact(contact._id);
         if (index !== -1) {
             this.contacts[index] = contact;
             this.selectContact(contact);
